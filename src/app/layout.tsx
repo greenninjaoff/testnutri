@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trendlama - Best Clothes",
-  description: "Trendlama is the best place to find the best clothes",
+  title: "Befit Nutrition - Best Nutrition",
+  description: "Nutrition for a better life. Shop our high-quality protein bars and supplements to fuel your fitness journey. Fast shipping and great customer service.",
 };
 
 export default function RootLayout({
