@@ -1,11 +1,13 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useT } from "@/i18n/t";
 
 const Filter = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useT();
 
   const handleFilter = (value: string) => {
     const params = new URLSearchParams(searchParams);
@@ -15,17 +17,17 @@ const Filter = () => {
 
   return (
     <div className="flex items-center justify-end gap-2 text-sm text-gray-500 my-6">
-      <span>Sort by:</span>
+      <span>{t("filter.sortBy")}:</span>
       <select
         name="sort"
         id="sort"
         className="ring-1 ring-gray-200 shadow-md p-1 rounded-sm"
         onChange={(e) => handleFilter(e.target.value)}
       >
-        <option value="newest">Newest</option>
-        <option value="oldest">Oldest</option>
-        <option value="asc">Price: Low to High</option>
-        <option value="desc">Price: High to Low</option>
+        <option value="newest">{t("filter.newest")}</option>
+        <option value="oldest">{t("filter.oldest")}</option>
+        <option value="asc">{t("filter.priceLowHigh")}</option>
+        <option value="desc">{t("filter.priceHighLow")}</option>
       </select>
     </div>
   );

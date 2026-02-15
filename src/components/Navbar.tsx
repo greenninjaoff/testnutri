@@ -3,10 +3,11 @@ import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { Bell, Home, ShoppingCart } from "lucide-react";
 import ShoppingCartIcon from "./ShoppingCartIcon";
+import ProfileDrawer from "./ProfileDrawer";
 
 const Navbar = () => {
   return (
-    <nav className="w-full flex items-center justify-between border-b border-gray-200 pb-4">
+    <nav className="w-full flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-4">
       {/* LEFT */}
       <Link href="/" className="flex items-center gap-2">
         <Image
@@ -24,11 +25,11 @@ const Navbar = () => {
       <div className="flex items-center gap-6">
         <SearchBar />
         <Link href="/">
-          <Home className="w-4 h-4 text-gray-600"/>
+          <Home className="w-4 h-4 text-gray-600" />
         </Link>
-        <Bell className="w-4 h-4 text-gray-600"/>
-        <ShoppingCartIcon/>
-        <Link href="/login">Sign in</Link>
+        <Bell className="w-4 h-4 text-gray-600" />
+        <ShoppingCartIcon />
+        <ProfileDrawer />
       </div>
     </nav>
   );

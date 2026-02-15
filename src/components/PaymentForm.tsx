@@ -1,11 +1,15 @@
+"use client";
+
 import { PaymentFormInputs, paymentFormSchema } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useT } from "@/i18n/t";
 
 const PaymentForm = () => {
+  const t = useT();
+
   const {
     register,
     handleSubmit,
@@ -14,87 +18,113 @@ const PaymentForm = () => {
     resolver: zodResolver(paymentFormSchema),
   });
 
-  const router = useRouter();
+  const getErrorText = (field: keyof PaymentFormInputs) => {
+    const err = errors[field];
+    if (!err) return "";
 
-  const handlePaymentForm: SubmitHandler<PaymentFormInputs> = (data) => {
-    
+    if (field === "cardHolder") {
+      if (err.type === "too_small") return t("errors.required");
+    }
+
+    if (field === "cardNumber") {
+      if (err.type === "too_small" || err.type === "too_big")
+        return t("errors.cardNumberLength");
+    }
+
+    if (field === "expirationDate") {
+      // regex mismatch usually comes as "invalid_string"
+      return t("errors.expFormat");
+    }
+
+    if (field === "cvv") {
+      if (err.type === "too_small" || err.type === "too_big")
+        return t("errors.cvvLength");
+    }
+
+    return t("errors.required");
+  };
+
+  const handlePaymentForm: SubmitHandler<PaymentFormInputs> = () => {
+    // later: submit payment
   };
 
   return (
-    <form
-      className="flex flex-col gap-4"
-      onSubmit={handleSubmit(handlePaymentForm)}
-    >
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(handlePaymentForm)}>
       <div className="flex flex-col gap-1">
         <label htmlFor="cardHolder" className="text-xs text-gray-500 font-medium">
-          Name on card
+          {t("common.nameOnCard")}
         </label>
         <input
           className="border-b border-gray-200 py-2 outline-none text-sm"
           type="text"
           id="cardHolder"
-          placeholder="John Doe"
+          placeholder={t("placeholders.cardHolder")}
           {...register("cardHolder")}
         />
         {errors.cardHolder && (
-          <p className="text-xs text-red-500">{errors.cardHolder.message}</p>
+          <p className="text-xs text-red-500">{getErrorText("cardHolder")}</p>
         )}
       </div>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="cardNumber" className="text-xs text-gray-500 font-medium">
-          Card Number
+          {t("common.cardNumber")}
         </label>
         <input
           className="border-b border-gray-200 py-2 outline-none text-sm"
           type="text"
           id="cardNumber"
-          placeholder="123456789123"
+          placeholder={t("placeholders.cardNumber")}
           {...register("cardNumber")}
         />
         {errors.cardNumber && (
-          <p className="text-xs text-red-500">{errors.cardNumber.message}</p>
+          <p className="text-xs text-red-500">{getErrorText("cardNumber")}</p>
         )}
       </div>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="expirationDate" className="text-xs text-gray-500 font-medium">
-          Expiration Date
+          {t("common.expirationDate")}
         </label>
         <input
           className="border-b border-gray-200 py-2 outline-none text-sm"
           type="text"
           id="expirationDate"
-          placeholder="01/32"
+          placeholder={t("placeholders.expirationDate")}
           {...register("expirationDate")}
         />
         {errors.expirationDate && (
-          <p className="text-xs text-red-500">{errors.expirationDate.message}</p>
+          <p className="text-xs text-red-500">{getErrorText("expirationDate")}</p>
         )}
       </div>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="cvv" className="text-xs text-gray-500 font-medium">
-          CVV
+          {t("common.cvv")}
         </label>
         <input
           className="border-b border-gray-200 py-2 outline-none text-sm"
           type="text"
           id="cvv"
-          placeholder="123"
+          placeholder={t("placeholders.cvv")}
           {...register("cvv")}
         />
         {errors.cvv && (
-          <p className="text-xs text-red-500">{errors.cvv.message}</p>
+          <p className="text-xs text-red-500">{getErrorText("cvv")}</p>
         )}
       </div>
-      <div className='flex items-center gap-2 mt-4'>
-        <Image src="/klarna.png" alt="klarna" width={50} height={25} className="rounded-md"/>
-        <Image src="/cards.png" alt="cards" width={50} height={25} className="rounded-md"/>
-        <Image src="/stripe.png" alt="stripe" width={50} height={25} className="rounded-md"/>
+
+      <div className="flex items-center gap-2 mt-4">
+        <Image src="/klarna.png" alt="klarna" width={50} height={25} className="rounded-md" />
+        <Image src="/cards.png" alt="cards" width={50} height={25} className="rounded-md" />
+        <Image src="/stripe.png" alt="stripe" width={50} height={25} className="rounded-md" />
       </div>
+
       <button
         type="submit"
         className="w-full bg-gray-800 hover:bg-gray-900 transition-all duration-300 text-white p-2 rounded-lg cursor-pointer flex items-center justify-center gap-2"
       >
-        Checkout
+        {t("common.checkout")}
         <ShoppingCart className="w-3 h-3" />
       </button>
     </form>

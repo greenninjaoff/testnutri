@@ -1,85 +1,54 @@
 "use client";
-import {
-  Footprints,
-  Glasses,
-  Briefcase,
-  Shirt,
-  ShoppingBasket,
-  Hand,
-  Venus,
-} from "lucide-react";
+
+import { ShoppingBasket, Dumbbell, Pill, Flame, Zap, Apple } from "lucide-react";
+import { useT } from "@/i18n/t";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const categories = [
-  {
-    name: "All",
-    icon: <ShoppingBasket className="w-4 h-4" />,
-    slug: "all",
-  },
-  {
-    name: "T-shirts",
-    icon: <Shirt className="w-4 h-4" />,
-    slug: "t-shirts",
-  },
-  {
-    name: "Shoes",
-    icon: <Footprints className="w-4 h-4" />,
-    slug: "shoes",
-  },
-  {
-    name: "Accessories",
-    icon: <Glasses className="w-4 h-4" />,
-    slug: "accessories",
-  },
-  {
-    name: "Bags",
-    icon: <Briefcase className="w-4 h-4" />,
-    slug: "bags",
-  },
-  {
-    name: "Dresses",
-    icon: <Venus className="w-4 h-4" />,
-    slug: "dresses",
-  },
-  {
-    name: "Jackets",
-    icon: <Shirt className="w-4 h-4" />,
-    slug: "jackets",
-  },
-  {
-    name: "Gloves",
-    icon: <Hand className="w-4 h-4" />,
-    slug: "gloves",
-  },
+  { labelKey: "categories.all", icon: <ShoppingBasket className="w-4 h-4" />, slug: "all" },
+  { labelKey: "categories.proteinBars", icon: <Apple className="w-4 h-4" />, slug: "protein bars" },
+  { labelKey: "categories.healthyBars", icon: <Apple className="w-4 h-4" />, slug: "healthy bars" },
+  { labelKey: "categories.wpc", icon: <Dumbbell className="w-4 h-4" />, slug: "wpc" },
+  { labelKey: "categories.wpcwpi", icon: <Dumbbell className="w-4 h-4" />, slug: "wpcwpi" },
+  { labelKey: "categories.bcaa", icon: <Zap className="w-4 h-4" />, slug: "bcaa" },
+  { labelKey: "categories.creatine", icon: <Flame className="w-4 h-4" />, slug: "creatine" },
+  { labelKey: "categories.multivitamins", icon: <Pill className="w-4 h-4" />, slug: "multivitamins" },
+  { labelKey: "categories.preworkout", icon: <Zap className="w-4 h-4" />, slug: "preworkout" },
 ];
 
 const Categories = () => {
+  const t = useT(); // ✅ hook must be inside component
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const selectedCategory = searchParams.get("category");
+  const selectedCategory = searchParams.get("category") || "all";
 
-  const handleChange = (value: string | null) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("category", value || "all");
+  const handleChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("category", value);
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 bg-gray-100 p-2 rounded-lg mb-4 text-sm mt-4">
-      {categories.map((category) => (
-        <div
-          className={`flex items-center justify-center gap-2 cursor-pointer px-2 py-1 rounded-md ${
-            category.slug === selectedCategory ? "bg-lime-400 text-white" : "text-gray-500"
-          }`}
-          key={category.name}
-          onClick={() => handleChange(category.slug)}
-        >
-          {category.icon}
-          {category.name}
-        </div>
-      ))}
+    <div className="bg-gray-100 p-2 rounded-lg mb-4 text-sm mt-4">
+      <div className="flex gap-2 overflow-x-auto whitespace-nowrap no-scrollbar">
+        {categories.map((category) => (
+          <button
+            type="button"
+            key={category.slug}
+            onClick={() => handleChange(category.slug)}
+            className={`flex-shrink-0 flex items-center justify-center gap-2 cursor-pointer px-4 py-2 rounded-md transition ${category.slug === selectedCategory
+                ? "bg-lime-400 text-white"
+                : "text-gray-500 bg-white"
+              }`}
+          >
+            {category.icon}
+            {t(category.labelKey)}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
