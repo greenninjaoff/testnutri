@@ -163,21 +163,22 @@ const CartClient = () => {
                             <button
                               type="button"
                               onClick={() => decQty(item.productId, item.sku, item.quantity)}
-                              className="w-10 h-10 flex items-center justify-center text-lg hover:bg-gray-200 transition"
+                              className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center text-lg hover:bg-gray-200 transition"
                               aria-label="Decrease quantity"
                               title="Decrease"
                             >
                               –
                             </button>
 
-                            <div className="w-10 h-10 flex items-center justify-center text-sm font-medium">
+                            <div className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center text-xs lg:text-sm font-medium">
                               {item.quantity}
                             </div>
+
 
                             <button
                               type="button"
                               onClick={() => incQty(item.productId, item.sku, item.quantity)}
-                              className="w-10 h-10 flex items-center justify-center text-lg hover:bg-gray-200 transition"
+                              className="w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center text-lg hover:bg-gray-200 transition"
                               aria-label="Increase quantity"
                               title="Increase"
                             >
