@@ -24,7 +24,8 @@ const ProductCard = ({
   const { lang } = useLangStore();
   const t = useT();
 
-  const { name: localizedName, tagline } = getVariantText(product, variant, lang);
+  // ✅ updated: no tagline anymore
+  const { name: localizedName, description } = getVariantText(product, variant, lang);
 
   const prettyFlavor = (variant.flavorKey || "").replaceAll("_", " ").trim();
 
@@ -35,7 +36,9 @@ const ProductCard = ({
       ? `${localizedName} - ${prettyFlavor}${variant.netWeight ? `, ${variant.netWeight}` : ""}`
       : `${localizedName}${variant.netWeight ? `, ${variant.netWeight}` : ""}`;
 
-  const shortDescription = tagline || "";
+  // ✅ updated: show description (or empty)
+  const shortDescription = description || "";
+
   const price = Number(variant.price ?? 0);
   const imageSrc = variant.image || "/placeholder.png";
 
@@ -66,10 +69,7 @@ const ProductCard = ({
 
   const inc = () => {
     if (!cartItem) return;
-    updateQuantity(
-      { productId: product.id, sku: variant.sku },
-      cartItem.quantity + 1
-    );
+    updateQuantity({ productId: product.id, sku: variant.sku }, cartItem.quantity + 1);
   };
 
   const dec = () => {
@@ -80,10 +80,7 @@ const ProductCard = ({
       return;
     }
 
-    updateQuantity(
-      { productId: product.id, sku: variant.sku },
-      cartItem.quantity - 1
-    );
+    updateQuantity({ productId: product.id, sku: variant.sku }, cartItem.quantity - 1);
   };
 
   return (
@@ -132,7 +129,7 @@ const ProductCard = ({
 
         {/* PRICE + CART */}
         <div className="mt-auto flex items-center justify-between">
-          <p className="font-medium">{price.toFixed(3)}</p>
+          <p className="font-medium">{price}</p>
 
           {!cartItem ? (
             <button

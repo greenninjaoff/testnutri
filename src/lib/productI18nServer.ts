@@ -7,11 +7,10 @@ export function getVariantTextServer(
   lang: Lang
 ) {
   const v = variant?.i18n?.[lang];
-  const common = product.commonI18n?.[lang];
 
   return {
     name: v?.name || product.baseName,
-    description: v?.description || common?.note || "",
-    tagline: v?.tagline || "",
+    description: v?.description || "",
+    ingredients: v?.ingredients || "",
   };
 }

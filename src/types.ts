@@ -5,14 +5,14 @@ export type LocaleKey = "ru" | "uz" | "en";
 export type ProductI18n = {
   name?: string;
   description?: string;
-  tagline?: string;
+  ingredients?: string;
 };
 
 export type ProductVariant = {
   sku: string;                // unique per variant
   flavorKey?: string;         // optional: used like "Double_Chocolate"
   netWeight?: string;         // "40g", "700g", etc
-  price: number | null;       // can be null in seed data
+  price: number;       // can be null in seed data
   image?: string;
 
   i18n: Partial<Record<LocaleKey, ProductI18n>>;
@@ -26,8 +26,6 @@ export type ProductType = {
   series: string;
 
   netWeightOptions: string[];
-
-  commonI18n: Partial<Record<LocaleKey, { note?: string }>>;
 
   variants: ProductVariant[];
 };

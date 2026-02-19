@@ -21,6 +21,7 @@ import {
 import { useRouter } from "next/navigation";
 import useLangStore, { Lang } from "@/stores/langStore";
 import { useT } from "@/i18n/t";
+import useThemeStore from "@/stores/themeStore";
 
 const Row = ({
     icon,
@@ -58,6 +59,7 @@ export default function ProfileDrawer() {
 
     const t = useT();
     const { lang, setLang } = useLangStore();
+    const { theme, setTheme } = useThemeStore();
 
     useEffect(() => {
         const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
@@ -73,8 +75,8 @@ export default function ProfileDrawer() {
                 router.refresh(); // ✅ re-render server components (ProductPage)
             }}
             className={`px-3 py-2 rounded-md ring-1 text-sm transition ${lang === code
-                    ? "bg-lime-400 text-white ring-lime-400"
-                    : "bg-white text-gray-700 ring-gray-200 hover:bg-gray-50"
+                ? "bg-lime-400 text-white ring-lime-400"
+                : "bg-white text-gray-700 ring-gray-200 hover:bg-gray-50"
                 }`}
         >
             {code.toUpperCase()}
@@ -185,15 +187,29 @@ export default function ProfileDrawer() {
                     </div>
 
                     {/* Theme placeholder (we’ll implement in step #2) */}
-                    <Row
-                        icon={<Moon className="w-4 h-4" />}
-                        label={t("common.theme")}
-                        onClick={() => { }}
-                    />
+                    <div className="px-3">
+                        <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+                            <Moon className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <span className="text-sm">{t("common.theme")}</span>
+                        </div>
 
-                    <Row icon={<Info className="w-4 h-4" />} label={t("common.about")} href="/about" />
+                        <div className="mt-2 flex gap-2">
+                            {(["light", "dark", "system"] as const).map((mode) => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => setTheme(mode)}
+                                    className={`px-3 py-2 rounded-md ring-1 text-sm transition ${theme === mode
+                                            ? "bg-lime-400 text-white ring-lime-400"
+                                            : "bg-white dark:bg-[rgb(var(--card))] text-gray-700 dark:text-gray-200 ring-gray-200 dark:ring-[rgb(var(--border))] hover:bg-gray-50 dark:hover:bg-[rgb(var(--surface))]"
+                                        }`}
+                                >
+                                    {mode === "light" ? "Light" : mode === "dark" ? "Dark" : "System"}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
 
-                    <div className="border-t my-2" />
 
                     {/* Support */}
                     <a
