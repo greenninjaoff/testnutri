@@ -80,15 +80,7 @@ const CartClient = () => {
           {activeStep === 1 ? (
             <CartStep1 t={t} cart={cart as any} catalog={catalog as any} onInc={incQty} onDec={decQty} />
           ) : activeStep === 2 ? (
-            <OrderStep2
-              t={t}
-              cart={cart}
-              catalog={catalog}
-              shippingForm={shippingForm}
-              setShippingForm={setShippingForm}
-              onBack={() => router.push("?step=1")}
-              onNext={() => router.push("?step=3")}
-            />
+            <OrderStep2/>
           ) : activeStep === 3 && shippingForm ? (
             <PaymentForm />
           ) : (
