@@ -5,11 +5,12 @@ import RecommendationsRow from "@/components/RecommendationsRow";
 import OrderStep2 from "@/components/checkout/OrderStep2";
 import CartStep1 from "@/components/checkout/OrderStep1";
 import useCartStore from "@/stores/cartStore";
+import useCheckoutStore from "@/stores/checkoutStore";
 import useLangStore from "@/stores/langStore";
 import { ShippingFormInputs } from "@/types";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useT } from "@/i18n/t";
 import { catalog } from "@/data/products";
 import { formatPrice } from "@/lib/formatPrice";
@@ -26,7 +27,26 @@ const CartClient = () => {
 
   const { cart, removeFromCart, updateQuantity } = useCartStore();
 
+  const deliveryType = useCheckoutStore((s) => s.deliveryType);
+  const setPriceDetails = useCheckoutStore((s) => s.setPriceDetails);
+
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  useEffect(() => {
+    const itemsTotal = subtotal;
+    const deliveryFee = subtotal > 0 ? 6999 : 0;
+    const serviceFee = subtotal > 0 ? 4990 : 0;
+    const priorityFee = deliveryType === "priority" ? 9900 : 0;
+    const total = itemsTotal + deliveryFee + serviceFee + priorityFee;
+
+    setPriceDetails({
+      itemsTotal,
+      deliveryFee,
+      serviceFee,
+      priorityFee,
+      total,
+    });
+  }, [subtotal, deliveryType, setPriceDetails]);
 
   const goToStep = (step: number) => router.push(`/cart?step=${step}`, { scroll: false });
 
@@ -42,7 +62,6 @@ const CartClient = () => {
     updateQuantity({ productId, sku }, currentQty - 1);
   };
 
-  // ✅ Recommendations list (exclude items already in cart)
   const recItems = useMemo(() => {
     const cartSkus = new Set(cart.map((c) => c.sku));
 
@@ -52,7 +71,6 @@ const CartClient = () => {
       .slice(0, 6);
   }, [cart]);
 
-  // ✅ arrows control desktop recommendations
   const recRef = useRef<HTMLDivElement | null>(null);
 
   const scrollRecs = (dir: "left" | "right") => {
@@ -78,9 +96,15 @@ const CartClient = () => {
         {/* LEFT */}
         <div className="w-full lg:w-7/12 shadow-lg border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-4 lg:p-8 rounded-lg flex flex-col gap-6">
           {activeStep === 1 ? (
-            <CartStep1 t={t} cart={cart as any} catalog={catalog as any} onInc={incQty} onDec={decQty} />
+            <CartStep1
+              t={t}
+              cart={cart as any}
+              catalog={catalog as any}
+              onInc={incQty}
+              onDec={decQty}
+            />
           ) : activeStep === 2 ? (
-            <OrderStep2/>
+            <OrderStep2 />
           ) : activeStep === 3 && shippingForm ? (
             <PaymentForm />
           ) : (
@@ -107,10 +131,7 @@ const CartClient = () => {
               <button
                 type="button"
                 onClick={() => goToStep(2)}
-                className="w-full bg-lime-400 text-black p-3 rounded-lg flex items-center justify-center gap-2
-                  transition-all duration-200 ease-out
-                  hover:bg-lime-700 active:bg-lime-700
-                  active:scale-[0.98]"
+                className="w-full bg-lime-400 text-black p-3 rounded-lg flex items-center justify-center gap-2 transition-all duration-200 ease-out hover:bg-lime-700 active:bg-lime-700 active:scale-[0.98]"
               >
                 {t("cart.continue")}
                 <ArrowRight className="w-4 h-4" />
@@ -128,10 +149,7 @@ const CartClient = () => {
                   <button
                     type="button"
                     onClick={() => scrollRecs("left")}
-                    className="w-7 h-7 rounded-md border border-[rgb(var(--border))]
-                      flex items-center justify-center
-                      transition-all duration-200 ease-out
-                      hover:bg-[rgb(var(--surface))] active:scale-95"
+                    className="w-7 h-7 rounded-md border border-[rgb(var(--border))] flex items-center justify-center transition-all duration-200 ease-out hover:bg-[rgb(var(--surface))] active:scale-95"
                     aria-label="Scroll left"
                   >
                     <ChevronLeft className="w-4 h-4" />
@@ -140,10 +158,7 @@ const CartClient = () => {
                   <button
                     type="button"
                     onClick={() => scrollRecs("right")}
-                    className="w-7 h-7 rounded-md border border-[rgb(var(--border))]
-                      flex items-center justify-center
-                      transition-all duration-200 ease-out
-                      hover:bg-[rgb(var(--surface))] active:scale-95"
+                    className="w-7 h-7 rounded-md border border-[rgb(var(--border))] flex items-center justify-center transition-all duration-200 ease-out hover:bg-[rgb(var(--surface))] active:scale-95"
                     aria-label="Scroll right"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -157,7 +172,7 @@ const CartClient = () => {
         </div>
       </div>
 
-      {/* ✅ MOBILE ONLY: “You may also like” after left part */}
+      {/* MOBILE ONLY: “You may also like” after left part */}
       {activeStep === 1 && recItems.length > 0 && (
         <div className="lg:hidden mt-6 px-4">
           <div className="shadow-lg border border-[rgb(var(--border))] bg-[rgb(var(--card))] p-5 rounded-lg">
@@ -167,18 +182,18 @@ const CartClient = () => {
         </div>
       )}
 
-      {/* MOBILE SPACER */}
-      <div className="lg:hidden h-24" />
+      {/* MOBILE SPACER ONLY FOR STEP 1 */}
+      {activeStep === 1 && <div className="lg:hidden h-24" />}
 
-      {/* MOBILE FIXED BOTTOM BAR */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[rgb(var(--card))] border-t border-[rgb(var(--border))] px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs text-[rgb(var(--muted))]">{t("cart.total")}</p>
-            <p className="text-lg font-semibold text-[rgb(var(--text))]">{formatPrice(subtotal)}</p>
-          </div>
+      {/* MOBILE FIXED BOTTOM BAR ONLY FOR STEP 1 */}
+      {activeStep === 1 && (
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[rgb(var(--card))] border-t border-[rgb(var(--border))] px-4 py-3 z-40">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-[rgb(var(--muted))]">{t("cart.total")}</p>
+              <p className="text-lg font-semibold text-[rgb(var(--text))]">{formatPrice(subtotal)}</p>
+            </div>
 
-          {activeStep === 1 ? (
             <button
               type="button"
               onClick={() => goToStep(2)}
@@ -187,26 +202,9 @@ const CartClient = () => {
               {t("cart.continue")}
               <ArrowRight className="w-4 h-4" />
             </button>
-          ) : activeStep === 2 ? (
-            <button
-              type="button"
-              onClick={() => goToStep(3)}
-              className="bg-lime-400 hover:bg-lime-700 text-black px-5 py-3 rounded-xl font-medium flex items-center gap-2 transition"
-            >
-              {t("cart.continue")}
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="bg-[rgb(var(--surface))] text-[rgb(var(--muted))] px-5 py-3 rounded-xl font-medium cursor-not-allowed"
-              disabled
-            >
-              {t("cart.continue")}
-            </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

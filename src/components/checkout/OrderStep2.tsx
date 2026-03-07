@@ -1,21 +1,41 @@
 "use client";
 
-import { useT } from "@/i18n/t";
+import DeliveryType from "./DeliveryType";
+import AddressBlock from "./AddressBlock";
+import CourierInstructionsRow from "./CourierInstructionsRow";
+import PhoneRow from "./PhoneRow";
+import LeaveAtDoorToggle from "./LeaveAtDoorToggle";
+import PromoRow from "./PromoRow";
+import PaymentSection from "./PaymentSection";
+import PriceDetails from "./PriceDetails";
+import StickyOrderBar from "./StickyOrderBar";
+import CourierInstructionsSheet from "./sheets/CourierInstructionsSheet";
+import AddressSheet from "./sheets/AddressSheet";
+import PhoneSheet from "./sheets/PhoneSheet";
+import PromoSheet from "./sheets/PromoSheet";
+import CardSheet from "./sheets/CardSheet";
 
 const OrderStep2 = () => {
-  const t = useT();
-
   return (
-    <div className="w-full flex flex-col items-center justify-center py-16">
+    <div className="flex flex-col gap-4 pb-28">
 
-      <h1 className="text-2xl font-semibold mb-4">
-        {t("checkout.step2") || "Step 2"}
-      </h1>
+      <DeliveryType />
+      <AddressBlock />
+      <CourierInstructionsRow />
+      <PhoneRow />
+      <LeaveAtDoorToggle />
+      <PromoRow />
+      <PaymentSection />
+      <PriceDetails />
 
-      <p className="text-gray-500">
-        Order review will be here.
-      </p>
+      <StickyOrderBar />
 
+      <CourierInstructionsSheet />
+      <AddressSheet />
+      <PhoneSheet />
+      <PromoSheet />
+      <CourierInstructionsSheet />
+      <CardSheet />
     </div>
   );
 };
